@@ -1,2 +1,5 @@
 .env
 *.code-workspace
+.webapppr
+__pycache__/
+guide_panel/__pycache__/
