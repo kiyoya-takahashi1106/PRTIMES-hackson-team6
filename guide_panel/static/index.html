@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Campaign Guide</title>
+		<link rel="stylesheet" href="/static/index.css" />
+	</head>
+	<body>
+		<div class="app-shell" id="app-shell">
+			<main class="main-panel">
+				<header class="main-header">
+					<div>
+						<p class="eyebrow">PR TIMES / CAMPAIGN GUIDE</p>
+						<h1>Launch your next campaign.</h1>
+						<p class="intro">A practical campaign path for a small team without a dedicated PR contact.</p>
+					</div>
+					<button
+						class="menu-button"
+						id="panel-toggle"
+						type="button"
+						aria-controls="guide-panel"
+						aria-expanded="true"
+						aria-label="Collapse guide panel"
+						title="Collapse guide panel"
+					>
+						<span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+					</button>
+				</header>
+
+				<section class="workspace" aria-labelledby="workspace-title">
+					<div class="section-heading">
+						<div>
+							<p class="eyebrow">CURRENT STEP</p>
+							<h2 id="workspace-title"></h2>
+						</div>
+						<span class="step-count" id="step-count"></span>
+					</div>
+
+					<div class="progress-bar" id="progress-bar"><span></span></div>
+
+					<form id="step-form"></form>
+
+					<div class="workspace-footer">
+						<p id="next-hint"></p>
+						<div class="workspace-actions">
+							<button class="secondary-button" id="back-button" type="button">← Back</button>
+							<button class="primary-button" id="next-button" type="submit" form="step-form">Continue <span aria-hidden="true">→</span></button>
+						</div>
+					</div>
+				</section>
+			</main>
+
+			<!-- TODO Let Flawchart follow progress -->
+			<aside class="guide-panel" id="guide-panel" aria-label="Campaign progress">
+				<div class="panel-kicker" id="panel-kicker">GUIDE</div>
+				<h2>Campaign flow</h2>
+				<p class="panel-description">From the first idea to a published release.</p>
+
+				<ol class="steps" id="campaign-steps" aria-live="polite"></ol>
+
+				<div class="panel-note">
+					<span class="note-mark" aria-hidden="true">✦</span>
+					<div><strong>Quick note</strong><p>Specific details make a release easier for media to pick up.</p></div>
+				</div>
+			</aside>
+		</div>
+
+		<script>
+			const shell = document.getElementById("app-shell");
+			const toggle = document.getElementById("panel-toggle");
+			const stepsList = document.getElementById("campaign-steps");
+			const stepForm = document.getElementById("step-form");
+			const nextButton = document.getElementById("next-button");
+			const backButton = document.getElementById("back-button");
+			const state = { currentStepId: null, answers: {} };
+
+			function renderOverview(steps) {
+				stepsList.innerHTML = steps.map((step, index) => `
+					<li class="step ${index === steps.length - 1 ? "is-active" : "is-complete"}">
+						<span class="step-marker">${step.number}</span>
+						<button class="step-jump" type="button" data-step-id="${step.id}" ${index === steps.length - 1 ? "aria-current=\"step\"" : ""}>
+							<strong>${step.title}</strong><span>${step.description}</span>${step.status === "todo" ? '<em class="step-status">TODO</em>' : ""}
+						</button>
+					</li>
+				`).join("");
+			}
+
+			function renderField(field, answers, readOnly) {
+			const value = answers[field.id] || field.defaultValue || "";
+			if (field.inputType === "textarea" || field.inputType === "rich-text") {
+				return `<label class="field"><span>${field.label}</span><textarea name="${field.id}" rows="${field.inputType === "rich-text" ? 10 : 6}" placeholder="${field.placeholder || ""}" ${readOnly ? "disabled" : ""}>${value}</textarea></label>`;
+			}
+			if (field.inputType === "file") {
+				return `<label class="field"><span>${field.label}</span><input name="${field.id}" type="file" accept="${field.accept || ""}" ${field.multiple ? "multiple" : ""} ${readOnly ? "disabled" : ""} /></label>`;
+			}
+			return `<label class="field"><span>${field.label}</span><input name="${field.id}" type="${field.inputType || "text"}" value="${value}" placeholder="${field.placeholder || ""}" ${readOnly ? "disabled" : ""} /></label>`;
+		}
+
+			function renderStep(step, response) {
+				document.getElementById("workspace-title").textContent = step.title;
+				document.getElementById("step-count").textContent = `${response.step_position} / ${response.total_steps}`;
+				document.getElementById("panel-kicker").textContent = `GUIDE / ${response.total_steps} STAGES`;
+				document.getElementById("progress-bar").setAttribute("aria-label", `Step ${response.step_position} of ${response.total_steps}`);
+				document.querySelector("#progress-bar span").style.width = `${(response.step_position / response.total_steps) * 100}%`;
+				renderOverview(response.visible_steps);
+				const readOnly = response.read_only;
+
+				if (step.type === "choice") {
+					stepForm.innerHTML = `<fieldset class="choice-group"><legend>${step.description}</legend>${step.options.map((option) => `
+						<label class="choice-option"><input type="radio" name="route" value="${option.id}" ${state.answers.route === option.id ? "checked" : ""} required ${readOnly ? "disabled" : ""} /><span><strong>${option.title}</strong><small>${option.description}</small></span></label>
+					`).join("")}</fieldset>`;
+				} else if (step.fields) {
+					stepForm.innerHTML = `<p class="step-description">${step.description}</p><div class="form-grid">${step.fields.slice(0, 2).map((field) => renderField(field, state.answers, readOnly)).join("")}</div>${step.fields.length > 2 ? step.fields.slice(2).map((field) => renderField(field, state.answers, readOnly)).join("") : ""}`;
+				} else if (step.type === "datetime" || step.type === "booking") {
+					stepForm.innerHTML = `<p class="step-description">${step.description}</p><div class="form-grid"><label class="field"><span>Date and time</span><input name="scheduled_at" type="datetime-local" required ${readOnly ? "disabled" : ""} /></label></div>`;
+				} else {
+					stepForm.innerHTML = `<div class="step-message"><strong>${step.title}</strong><p>${step.description}</p></div>`;
+				}
+
+				nextButton.disabled = step.id === "submitted";
+				backButton.disabled = response.step_index === 0;
+				nextButton.innerHTML = step.id === "submitted" ? "Published" : 'Continue <span aria-hidden="true">→</span>';
+				document.getElementById("next-hint").textContent = step.id === "submitted"
+					? "Your campaign is published."
+					: readOnly
+						? "This campaign is published and cannot be modified, but you can keep browsing the steps."
+						: "Your next step will be loaded by PR TIMES.";
+			}
+
+			async function loadStep(url, options) {
+				const response = await fetch(url, options);
+				if (!response.ok) throw new Error((await response.json()).detail || "Unable to load the next step.");
+				const data = await response.json();
+				state.currentStepId = data.current_step.id;
+				state.answers = data.answers || state.answers;
+				renderStep(data.current_step, data);
+			}
+
+			stepForm.addEventListener("submit", async (event) => {
+				event.preventDefault();
+				const formData = new FormData(stepForm);
+				formData.forEach((value, key) => {
+					state.answers[key] = value instanceof File ? `${value.name}` : value;
+				});
+				nextButton.disabled = true;
+				try {
+					await loadStep("/api/campaign/next", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ step_id: state.currentStepId, answers: state.answers }) });
+				} catch (error) {
+					document.getElementById("next-hint").textContent = error.message;
+					nextButton.disabled = false;
+				}
+			});
+
+			backButton.addEventListener("click", async () => {
+				backButton.disabled = true;
+				try {
+					await loadStep("/api/campaign/back", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ step_id: state.currentStepId, answers: state.answers }) });
+				} catch (error) {
+					document.getElementById("next-hint").textContent = error.message;
+					backButton.disabled = false;
+				}
+			});
+
+			stepsList.addEventListener("click", async (event) => {
+				const target = event.target.closest("[data-step-id]");
+				if (!target) return;
+				try {
+					await loadStep("/api/campaign/goto", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ step_id: target.dataset.stepId, answers: state.answers }) });
+				} catch (error) {
+					document.getElementById("next-hint").textContent = error.message;
+				}
+			});
+
+			loadStep("/api/campaign/start").catch((error) => {
+				document.getElementById("next-hint").textContent = error.message;
+			});
+
+			toggle.addEventListener("click", () => {
+				const isCollapsed = shell.classList.toggle("is-collapsed");
+				toggle.setAttribute("aria-expanded", String(!isCollapsed));
+				toggle.setAttribute("aria-label", isCollapsed ? "Expand guide panel" : "Collapse guide panel");
+				toggle.setAttribute("title", isCollapsed ? "Expand guide panel" : "Collapse guide panel");
+			});
+		</script>
+	</body>
+</html>

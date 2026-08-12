@@ -1,0 +1,114 @@
+{
+  "campaign": {
+    "businessType": "Small business",
+    "staffCount": null,
+    "prContact": null,
+    "productName": null,
+    "context": "A small business without a dedicated PR contact wants to promote a new product or service."
+  },
+  "steps": [
+    {
+      "id": "campaign-details",
+      "number": "01",
+      "title": "Campaign details",
+      "description": "Decide the title and summarize the main content.",
+      "type": "form",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Campaign title",
+          "inputType": "text",
+          "defaultValue": ""
+        },
+        {
+          "id": "main-content",
+          "label": "Main content",
+          "inputType": "textarea",
+          "placeholder": "What is new, when is it available, and why should customers care?"
+        }
+      ]
+    },
+    {
+      "id": "writing-route",
+      "number": "02",
+      "title": "Choose how to write",
+      "description": "Select self-publishing or ask PR TIMES to prepare the article.",
+      "type": "choice",
+      "options": [
+        {
+          "id": "self-publish",
+          "title": "Write it yourself",
+          "description": "Prepare and submit the release in the next step."
+        },
+        {
+          "id": "pr-times-writing-service",
+          "title": "Use the PR TIMES writing service",
+          "description": "Submit materials, then arrange an interview."
+        }
+      ]
+    },
+    {
+      "id": "self-publish-content",
+      "number": "03.1",
+      "title": "Submit your release",
+      "description": "Add the existing title, subtitle, article, and supporting media.",
+      "type": "form",
+      "branch": "self-publish",
+      "fields": [
+        { "id": "title", "label": "Title", "inputType": "text", "source": "campaign-details.title" },
+        { "id": "subtitle", "label": "Subtitle", "inputType": "text" },
+        { "id": "article", "label": "Article", "inputType": "rich-text" },
+        { "id": "media", "label": "Images or videos", "inputType": "file", "accept": "image/*,video/*", "multiple": true }
+      ]
+    },
+    {
+      "id": "service-materials",
+      "number": "03.2.1",
+      "title": "Submit materials",
+      "description": "Share the product information, images, videos, and brand details with PR TIMES.",
+      "type": "form",
+      "branch": "pr-times-writing-service",
+      "fields": [
+        { "id": "product-materials", "label": "Product and store information", "inputType": "textarea", "placeholder": "Share the product details, pricing, launch period, and store story." },
+        { "id": "service-media", "label": "Images or videos", "inputType": "file", "accept": "image/*,video/*", "multiple": true }
+      ]
+    },
+    {
+      "id": "service-interview",
+      "number": "03.2.2",
+      "title": "Arrange an interview",
+      "description": "Choose a time to explain the store, product, and campaign story to PR TIMES.",
+      "type": "booking",
+      "branch": "pr-times-writing-service"
+    },
+    {
+      "id": "publication-schedule",
+      "number": "04",
+      "title": "Reserve publication time",
+      "description": "Select the specific date and time when the article should be published.",
+      "type": "datetime"
+    },
+    {
+      "id": "media-list",
+      "number": "05",
+      "title": "Media list",
+      "description": "TODO: Media list requirements and workflow are still being decided.",
+      "type": "todo",
+      "status": "todo"
+    },
+    {
+      "id": "content-review",
+      "number": "06",
+      "title": "PR TIMES review",
+      "description": "PR TIMES reviews the content before publication. You can close this tab; we will notify you once it is finished.",
+      "type": "review"
+    },
+    {
+      "id": "submitted",
+      "number": "07",
+      "title": "Published",
+      "description": "The campaign has been published.",
+      "type": "complete"
+    }
+  ]
+}
