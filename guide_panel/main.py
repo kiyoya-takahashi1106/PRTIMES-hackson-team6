@@ -1,10 +1,16 @@
+import os
 from pathlib import Path
 from typing import Any, TypedDict
 import json
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+from api import router as api_router
+from db import init_db
+from seed import seed_if_empty
 
 BASE_DIR = Path(__file__).parent
 STATIC_DIR = BASE_DIR / "static"
@@ -23,6 +29,20 @@ campaign_state: CampaignState = {"step_index": 0, "answers": {}, "published": Fa
 # TODO Change this to .env instead of hardcoding
 app = FastAPI(title="PR TIMES Demo Panel")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+allowed_origins = os.environ.get(
+    "GUIDE_PANEL_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+).split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+init_db()
+seed_if_empty()
+app.include_router(api_router)
 
 class NextStepRequest(BaseModel):
     step_id: str
