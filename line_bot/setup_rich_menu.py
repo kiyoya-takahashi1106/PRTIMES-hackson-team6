@@ -1,4 +1,4 @@
-"""One-off admin script: creates the two rich menus on LINE, uploads their
+"""One-off admin script: creates the rich menus on LINE, uploads their
 images, links area actions, and sets menu 1 as the default for all users.
 
 Run after generate_richmenu_images.py, and re-run whenever the layout changes
@@ -38,45 +38,64 @@ IDS_FILE = BASE_DIR / "richmenu_ids.json"
 
 def build_menu1_areas() -> list[RichMenuArea]:
     cell_w = WIDTH // 3
-    cell_h = HEIGHT // 3
+    cell_h = HEIGHT // 2
     areas = []
     for index, category in enumerate(CATEGORIES):
         row, col = divmod(index, 3)
         x0 = col * cell_w
+        y0 = row * cell_h
         w = (WIDTH - x0) if col == 2 else cell_w
+        h = (HEIGHT - y0) if row == 1 else cell_h
         areas.append(
             RichMenuArea(
-                bounds=RichMenuBounds(x=x0, y=row * cell_h, width=w, height=cell_h),
+                bounds=RichMenuBounds(x=x0, y=y0, width=w, height=h),
                 action=PostbackAction(
                     data=f"category={category['code']}",
                     display_text=category["label"],
                 ),
             )
         )
-    footer_y0 = 2 * cell_h
-    areas.append(
-        RichMenuArea(
-            bounds=RichMenuBounds(x=0, y=footer_y0, width=WIDTH, height=HEIGHT - footer_y0),
-            action=PostbackAction(data="switch_menu=views", display_text="閲覧数を見る"),
-        )
-    )
     return areas
 
 
-def build_menu2_areas() -> list[RichMenuArea]:
+def build_menu3_areas() -> list[RichMenuArea]:
+    half = WIDTH // 2
     top_h = int(HEIGHT * 2 / 3)
     return [
         RichMenuArea(
-            bounds=RichMenuBounds(x=0, y=0, width=WIDTH // 2, height=top_h),
-            action=PostbackAction(data="view=weekly", display_text="今週の閲覧数"),
+            bounds=RichMenuBounds(x=0, y=0, width=half, height=top_h),
+            action=PostbackAction(data="corp_similar=1", display_text="類似事例を見る"),
         ),
         RichMenuArea(
-            bounds=RichMenuBounds(x=WIDTH // 2, y=0, width=WIDTH - WIDTH // 2, height=top_h),
-            action=PostbackAction(data="view=monthly", display_text="今月の閲覧数"),
+            bounds=RichMenuBounds(x=half, y=0, width=WIDTH - half, height=top_h),
+            action=PostbackAction(data="press_release_manage=1", display_text="プレスリリース管理"),
         ),
         RichMenuArea(
             bounds=RichMenuBounds(x=0, y=top_h, width=WIDTH, height=HEIGHT - top_h),
-            action=PostbackAction(data="switch_menu=category", display_text="類似記事に戻る"),
+            action=PostbackAction(data="account_link=1", display_text="アカウント連携"),
+        ),
+    ]
+
+
+def build_menu4_areas() -> list[RichMenuArea]:
+    col_w = WIDTH // 3
+    top_h = int(HEIGHT * 2 / 3)
+    return [
+        RichMenuArea(
+            bounds=RichMenuBounds(x=0, y=0, width=col_w, height=top_h),
+            action=PostbackAction(data="view_counts=1", display_text="閲覧数確認"),
+        ),
+        RichMenuArea(
+            bounds=RichMenuBounds(x=col_w, y=0, width=col_w, height=top_h),
+            action=PostbackAction(data="release_list=1", display_text="プレスリリース詳細"),
+        ),
+        RichMenuArea(
+            bounds=RichMenuBounds(x=2 * col_w, y=0, width=WIDTH - 2 * col_w, height=top_h),
+            action=PostbackAction(data="progress=1", display_text="進捗管理"),
+        ),
+        RichMenuArea(
+            bounds=RichMenuBounds(x=0, y=top_h, width=WIDTH, height=HEIGHT - top_h),
+            action=PostbackAction(data="back_to_corporate=1", display_text="メインメニューに戻る"),
         ),
     ]
 
@@ -116,26 +135,42 @@ def main() -> None:
             _headers={"Content-Type": "image/png"},
         )
 
-        print("Creating menu 2 (views)...")
-        menu2_id = messaging_api.create_rich_menu(
+        print("Creating menu 3 (corporate)...")
+        menu3_id = messaging_api.create_rich_menu(
             RichMenuRequest(
                 size=RichMenuSize(width=WIDTH, height=HEIGHT),
                 selected=False,
-                name="menu2-views",
-                chat_bar_text="閲覧数を見る",
-                areas=build_menu2_areas(),
+                name="menu3-corporate",
+                chat_bar_text="法人メニュー",
+                areas=build_menu3_areas(),
             )
         ).rich_menu_id
         blob_api.set_rich_menu_image(
-            menu2_id,
-            body=(BASE_DIR / "static" / "richmenu" / "menu2_views.png").read_bytes(),
+            menu3_id,
+            body=(BASE_DIR / "static" / "richmenu" / "menu3_corporate.png").read_bytes(),
+            _headers={"Content-Type": "image/png"},
+        )
+
+        print("Creating menu 4 (press release management)...")
+        menu4_id = messaging_api.create_rich_menu(
+            RichMenuRequest(
+                size=RichMenuSize(width=WIDTH, height=HEIGHT),
+                selected=False,
+                name="menu4-press-release",
+                chat_bar_text="プレスリリース管理",
+                areas=build_menu4_areas(),
+            )
+        ).rich_menu_id
+        blob_api.set_rich_menu_image(
+            menu4_id,
+            body=(BASE_DIR / "static" / "richmenu" / "menu4_press_release.png").read_bytes(),
             _headers={"Content-Type": "image/png"},
         )
 
         print("Setting menu 1 as the default for all users...")
         messaging_api.set_default_rich_menu(menu1_id)
 
-        ids = {"category": menu1_id, "views": menu2_id}
+        ids = {"category": menu1_id, "corporate": menu3_id, "press_release": menu4_id}
         IDS_FILE.write_text(json.dumps(ids, indent=2))
         print(f"Saved rich menu IDs to {IDS_FILE}")
         print(ids)
