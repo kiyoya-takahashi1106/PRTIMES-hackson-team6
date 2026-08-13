@@ -1,0 +1,117 @@
+.guided-spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  pointer-events: none;
+}
+
+.guided-spotlight__mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 12, 24, 0.52);
+  animation: guideFadeIn 220ms ease;
+}
+
+.guided-spotlight__ring {
+  position: fixed;
+  border-radius: 10px;
+  border: 2px solid #6f96ff;
+  box-shadow:
+    0 0 0 9999px rgba(8, 12, 24, 0.58),
+    0 0 0 8px rgba(111, 150, 255, 0.15),
+    0 0 28px rgba(111, 150, 255, 0.58);
+  animation: guidePulse 1600ms ease-in-out infinite;
+}
+
+.guided-spotlight__stop {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(8, 12, 24, 0.7);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  height: 32px;
+  padding: 0 12px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.guided-spotlight__tip-card {
+  position: fixed;
+  width: min(340px, calc(100vw - 32px));
+  background: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 14px;
+  box-shadow: 0 16px 34px rgba(8, 12, 24, 0.22);
+  padding: 14px;
+  pointer-events: auto;
+  animation: guideRiseIn 260ms ease;
+}
+
+.guided-spotlight__step {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2d4ed8;
+  margin-bottom: 8px;
+}
+
+.guided-spotlight__msg {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.guided-spotlight__controls {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.guided-spotlight__tip-card .guided-spotlight__msg {
+  margin: 0;
+}
+
+.guided-spotlight--fallback .guided-spotlight__tip-card {
+  top: 20px;
+  right: 20px;
+  left: auto;
+}
+
+@keyframes guidePulse {
+  0% {
+    transform: scale(1);
+    border-color: #6f96ff;
+  }
+  50% {
+    transform: scale(1.025);
+    border-color: #96b4ff;
+  }
+  100% {
+    transform: scale(1);
+    border-color: #6f96ff;
+  }
+}
+
+@keyframes guideFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes guideRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

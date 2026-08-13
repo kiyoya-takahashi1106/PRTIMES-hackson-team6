@@ -1,0 +1,115 @@
+.guidance-page__header {
+  align-items: flex-start;
+}
+
+.guidance-page__lead {
+  margin-top: 8px;
+  color: var(--color-gray-700);
+  font-size: 14px;
+}
+
+.guidance-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.guidance-page__card {
+  background: #fff;
+  border: 1px solid var(--color-gray-200);
+}
+
+.guidance-page__switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.guidance-page__section-title {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.guidance-page__muted {
+  font-size: 13px;
+  color: var(--color-gray-700);
+}
+
+.guidance-page__switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.guidance-page__switch input {
+  width: 18px;
+  height: 18px;
+}
+
+.guidance-page__flow {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.guidance-page__flow-item {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 8px;
+  min-width: fit-content;
+}
+
+.guidance-page__flow-node {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-gray-300);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-gray-700);
+  cursor: pointer;
+}
+
+.guidance-page__flow-node--done {
+  border-color: #3d5afe;
+  background: #3d5afe;
+  color: #fff;
+}
+
+.guidance-page__flow-node--current {
+  border-color: #0f9f6e;
+  background: #e8faf3;
+  color: #0f9f6e;
+}
+
+.guidance-page__flow-label {
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-gray-700);
+}
+
+.guidance-page__flow-connector {
+  width: 34px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-gray-300);
+}
+
+.guidance-page__flow-connector--done {
+  background: #3d5afe;
+}
+
+.guidance-page__summary {
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-gray-700);
+}

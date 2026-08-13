@@ -52,7 +52,11 @@ export default function AnalyticsReport() {
       )}
 
       <div className="tabs" style={{ marginBottom: 24 }}>
-        <div className={"tab" + (tab === "press" ? " active" : "")} onClick={() => setTab("press")}>
+        <div
+          className={"tab" + (tab === "press" ? " active" : "")}
+          onClick={() => setTab("press")}
+          data-guide-id="analytics-tab-press"
+        >
           プレスリリース
         </div>
         <div className={"tab" + (tab === "story" ? " active" : "")} onClick={() => setTab("story")}>

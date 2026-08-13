@@ -6,7 +6,7 @@ import TitleHintPopover from "../components/onboarding/TitleHintPopover";
 import "./CreateForm.css";
 
 export default function StoryNew() {
-  const { addStory } = useAppState();
+  const { addStory, setGuidancePaused } = useAppState();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [done, setDone] = useState(false);
@@ -81,6 +81,7 @@ export default function StoryNew() {
               placeholder="エピソードや想いを自由に書いてみましょう"
               value={body}
               onChange={(e) => setBody(e.target.value)}
+              data-guide-id="story-body"
             />
           </label>
 
@@ -88,7 +89,7 @@ export default function StoryNew() {
             <button type="submit" className="btn btn-outline">
               下書き保存
             </button>
-            <button type="submit" className="btn btn-solid">
+            <button type="submit" className="btn btn-solid" data-guide-id="story-submit" onClick={() => setGuidancePaused(false)}>
               公開する
             </button>
           </div>
