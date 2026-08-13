@@ -1,0 +1,46 @@
+.phase-intro {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #fffbea;
+  border: 1px solid #f4e2a1;
+  border-radius: 14px;
+  padding: 16px 44px 16px 18px;
+  margin-bottom: 24px;
+}
+
+.phase-intro__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.phase-intro__title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.phase-intro__text {
+  font-size: 13px;
+  color: var(--color-gray-700);
+  line-height: 1.7;
+}
+
+.phase-intro__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.phase-intro__tail {
+  position: absolute;
+  left: 28px;
+  bottom: -8px;
+  width: 16px;
+  height: 16px;
+  background: #fffbea;
+  border-right: 1px solid #f4e2a1;
+  border-bottom: 1px solid #f4e2a1;
+  transform: rotate(45deg);
+}

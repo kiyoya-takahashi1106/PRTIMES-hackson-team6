@@ -1,0 +1,74 @@
+.report-range {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.report-range input[type="date"] {
+  height: 36px;
+}
+
+.report-range__save {
+  margin-left: auto;
+}
+
+.chart-card {
+  margin-top: 24px;
+  background: var(--color-gray-50);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--color-gray-700);
+  margin-bottom: 12px;
+}
+
+.chart-legend__dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+.chart-legend__dot--pv {
+  background: var(--color-blue);
+}
+
+.chart-legend__dot--uu {
+  background: #b7c3ff;
+}
+
+.chart-svg {
+  width: 100%;
+  height: 220px;
+  display: block;
+}
+
+.chart-area {
+  fill: rgba(61, 90, 254, 0.12);
+  stroke: none;
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--color-blue);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart-x-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--color-gray-500);
+  margin-top: 8px;
+}
