@@ -1,0 +1,87 @@
+.post-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.post-type-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1.5px solid var(--color-gray-200);
+  background: #fff;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.post-type-card:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.post-type-card--press {
+  border-top: 4px solid var(--color-blue);
+}
+
+.post-type-card--story {
+  border-top: 4px solid #e8975a;
+}
+
+.post-type-card__tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-gray-500);
+  margin-bottom: 8px;
+}
+
+.post-type-card__title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.post-type-card__desc {
+  font-size: 13px;
+  color: var(--color-gray-700);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.post-type-card__points {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+.post-type-card__points li {
+  font-size: 13px;
+  padding-left: 18px;
+  position: relative;
+  color: var(--color-text);
+}
+
+.post-type-card__points li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-blue);
+  font-weight: 700;
+}
+
+.post-type-card--story .post-type-card__points li::before {
+  color: #e8975a;
+}
+
+.post-type-card__cta {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+@media (max-width: 900px) {
+  .post-type-grid {
+    grid-template-columns: 1fr;
+  }
+}

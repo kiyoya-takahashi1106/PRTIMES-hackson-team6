@@ -1,0 +1,9 @@
+.info-note {
+  font-size: 12px;
+  color: var(--color-gray-500);
+  margin-top: 6px;
+}
+
+.info-value {
+  line-height: 1.6;
+}
