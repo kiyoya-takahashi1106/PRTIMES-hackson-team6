@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
@@ -16,6 +16,8 @@ import {
   IconUser,
 } from "./icons";
 import { useAppState } from "../context/AppStateContext";
+import GuidanceFloatingPanel from "./onboarding/GuidanceFloatingPanel";
+import GuidedSpotlight from "./onboarding/GuidedSpotlight";
 import "./Layout.css";
 
 interface NavChild {
@@ -73,6 +75,11 @@ const nav: NavItem[] = [
     children: [{ label: "クリップ調査", to: "/web-clipping" }],
   },
   {
+    label: "ガイダンス",
+    icon: (p) => <IconBell {...toSvgSize(p)} />,
+    to: "/guidance",
+  },
+  {
     label: "企業ページ",
     icon: (p) => <IconCompany {...toSvgSize(p)} />,
     to: "/company-page",
@@ -102,7 +109,30 @@ export default function Layout() {
       item.children?.some((c) => location.pathname.startsWith(c.to.split("/new")[0]) || location.pathname === c.to)
   );
   const [openLabel, setOpenLabel] = useState<string | null>(activeParent?.children ? activeParent.label : null);
-  const { company } = useAppState();
+  const { company, onboarding, steps, currentStepIndex } = useAppState();
+
+  const currentStep = currentStepIndex < steps.length ? steps[currentStepIndex] : null;
+
+  const guidanceOpenLabel =
+    onboarding.guidanceEnabled && !onboarding.guidancePaused && currentStep
+      ? currentStep.key === "company"
+        ? "設定"
+        : currentStep.key === "mediaList"
+          ? "メディアリスト"
+          : currentStep.key === "analytics"
+            ? "分析データ"
+            : null
+      : null;
+
+  useEffect(() => {
+    setOpenLabel(activeParent?.children ? activeParent.label : null);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (guidanceOpenLabel) {
+      setOpenLabel(guidanceOpenLabel);
+    }
+  }, [guidanceOpenLabel]);
 
   return (
     <div className="app-shell">
@@ -113,7 +143,11 @@ export default function Layout() {
         <Link to="/media-lists/new" className="btn btn-outline btn-sm app-header__cta">
           メディアリスト新規作成
         </Link>
-        <Link to="/press-releases/new" className="btn btn-blue-outline btn-sm app-header__cta">
+        <Link
+          to="/press-releases/new"
+          className="btn btn-blue-outline btn-sm app-header__cta"
+          data-guide-id="header-create-press"
+        >
           プレスリリース新規作成
         </Link>
 
@@ -171,6 +205,15 @@ export default function Layout() {
                       <button
                         type="button"
                         className={"sidebar__item" + (isActive ? " sidebar__item--active" : "")}
+                        data-guide-id={
+                          item.label === "メディアリスト"
+                            ? "nav-media-list-group"
+                            : item.label === "分析データ"
+                              ? "nav-analytics-group"
+                              : item.label === "設定"
+                                ? "nav-settings-group"
+                                : undefined
+                        }
                         onClick={() => setOpenLabel(isOpen ? null : item.label)}
                       >
                         <span className="sidebar__icon">{item.icon({})}</span>
@@ -185,6 +228,15 @@ export default function Layout() {
                             <NavLink
                               to={child.to}
                               end
+                              data-guide-id={
+                                child.to === "/settings/company"
+                                  ? "nav-company-settings"
+                                  : child.to === "/media-lists"
+                                    ? "nav-media-list-link"
+                                    : child.to === "/analytics"
+                                      ? "nav-analytics-report"
+                                      : undefined
+                              }
                               className={({ isActive }) =>
                                 "sidebar__subitem" + (isActive ? " sidebar__subitem--active" : "")
                               }
@@ -206,6 +258,9 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+
+      <GuidanceFloatingPanel />
+      <GuidedSpotlight />
     </div>
   );
 }

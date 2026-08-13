@@ -6,7 +6,7 @@ import TitleHintPopover from "../components/onboarding/TitleHintPopover";
 import "./CreateForm.css";
 
 export default function PressReleaseNew() {
-  const { addPressRelease } = useAppState();
+  const { addPressRelease, setGuidancePaused } = useAppState();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [done, setDone] = useState(false);
@@ -81,6 +81,7 @@ export default function PressReleaseNew() {
               placeholder="配信内容の本文を入力してください"
               value={body}
               onChange={(e) => setBody(e.target.value)}
+              data-guide-id="press-release-body"
             />
           </label>
 
@@ -88,7 +89,7 @@ export default function PressReleaseNew() {
             <button type="submit" className="btn btn-outline">
               下書き保存
             </button>
-            <button type="submit" className="btn btn-solid">
+            <button type="submit" className="btn btn-solid" data-guide-id="press-release-submit" onClick={() => setGuidancePaused(false)}>
               配信する
             </button>
           </div>

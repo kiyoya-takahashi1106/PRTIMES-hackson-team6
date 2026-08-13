@@ -21,6 +21,9 @@ interface OnboardingState {
   isAnalyticsChecked: boolean;
   seenIntros: StepKey[];
   seenSpotlights: StepKey[];
+  guidanceEnabled: boolean;
+  guidancePaused: boolean;
+  guidanceStep: StepKey;
 }
 
 interface CompanyInfo {
@@ -52,6 +55,9 @@ const defaultOnboarding: OnboardingState = {
   isAnalyticsChecked: false,
   seenIntros: [],
   seenSpotlights: [],
+  guidanceEnabled: true,
+  guidancePaused: false,
+  guidanceStep: "company",
 };
 
 const defaultState: PersistedState = {
@@ -104,6 +110,9 @@ interface AppStateValue {
   markAnalyticsChecked: () => void;
   dismissIntro: (key: StepKey) => void;
   dismissSpotlight: (key: StepKey) => void;
+  setGuidanceEnabled: (enabled: boolean) => void;
+  setGuidancePaused: (paused: boolean) => void;
+  setGuidanceStep: (key: StepKey) => void;
   resetOnboarding: () => void;
 }
 
@@ -247,6 +256,18 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     patchOnboarding({ seenSpotlights: [...onboarding.seenSpotlights, key] });
   }
 
+  function setGuidanceEnabled(enabled: boolean) {
+    patchOnboarding({ guidanceEnabled: enabled });
+  }
+
+  function setGuidancePaused(paused: boolean) {
+    patchOnboarding({ guidancePaused: paused });
+  }
+
+  function setGuidanceStep(key: StepKey) {
+    patchOnboarding({ guidanceStep: key });
+  }
+
   function resetOnboarding() {
     setState((prev) => ({ ...prev, onboarding: defaultOnboarding }));
   }
@@ -269,6 +290,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     markAnalyticsChecked,
     dismissIntro,
     dismissSpotlight,
+    setGuidanceEnabled,
+    setGuidancePaused,
+    setGuidanceStep,
     resetOnboarding,
   };
 

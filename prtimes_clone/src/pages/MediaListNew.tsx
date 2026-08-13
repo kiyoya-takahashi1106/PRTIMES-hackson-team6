@@ -47,7 +47,7 @@ export default function MediaListNew() {
         </p>
 
         <div className="create-form__actions">
-          <button type="submit" className="btn btn-solid">
+          <button type="submit" className="btn btn-solid" data-guide-id="media-list-submit">
             リストを作成する
           </button>
         </div>
