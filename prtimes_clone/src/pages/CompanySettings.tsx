@@ -46,7 +46,7 @@ export default function CompanySettings() {
           {!onboarding.isCompanyProfileDone && <span className="company-status company-status--todo">未完了</span>}
           {onboarding.isCompanyProfileDone && <span className="company-status company-status--done">設定済み</span>}
         </h1>
-        <button type="button" className="btn btn-solid" onClick={openEdit}>
+        <button type="button" className="btn btn-solid" onClick={openEdit} data-guide-id="company-edit-trigger">
           情報を変更
         </button>
       </div>
@@ -107,7 +107,7 @@ export default function CompanySettings() {
               <button type="button" className="btn btn-outline" onClick={() => setEditing(false)}>
                 キャンセル
               </button>
-              <button type="button" className="btn btn-solid" onClick={save}>
+              <button type="button" className="btn btn-solid" onClick={save} data-guide-id="company-save">
                 保存する
               </button>
             </div>

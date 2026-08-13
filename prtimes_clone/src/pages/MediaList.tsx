@@ -26,7 +26,7 @@ export default function MediaList() {
 
       <div className="list-toolbar">
         <div className="list-toolbar__actions">
-          <Link to="/media-lists/new" className="btn btn-solid">
+          <Link to="/media-lists/new" className="btn btn-solid" data-guide-id="media-list-create">
             新規作成
           </Link>
           <span className="media-help">

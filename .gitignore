@@ -4,4 +4,4 @@
 __pycache__/
 guide_panel/__pycache__/
 node_modules
-line_bot/line_bot.db
+*.db

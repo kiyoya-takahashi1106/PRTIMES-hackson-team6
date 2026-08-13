@@ -44,7 +44,12 @@ export default function PostTypeSelect() {
 
       <div className="post-type-grid">
         {options.map((opt) => (
-          <Link to={opt.to} className={`post-type-card post-type-card--${opt.accent}`} key={opt.key}>
+          <Link
+            to={opt.to}
+            className={`post-type-card post-type-card--${opt.accent}`}
+            key={opt.key}
+            data-guide-id={opt.key === "press" ? "post-type-press" : "post-type-story"}
+          >
             <div className="post-type-card__tag">{opt.tagline}</div>
             <h2 className="post-type-card__title">{opt.title}</h2>
             <p className="post-type-card__desc">{opt.description}</p>
