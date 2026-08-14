@@ -313,12 +313,11 @@ export default function PressReleaseNew() {
                   {recommendationStatus === "success" && (
                     <>
                       <strong>{recommendations.length}媒体を自動選択しました。</strong>
-                      <span>類似度が高い掲載実績を優先しています。</span>
+                      <span>過去の掲載実績をもとに選定しています。</span>
                       <ol className="release-destination__recommendations">
                         {recommendations.map((item) => (
                           <li key={item.mediaId ?? item.siteName}>
                             <span>{item.siteName}</span>
-                            <small>類似度 {(item.score * 100).toFixed(1)}%</small>
                           </li>
                         ))}
                       </ol>

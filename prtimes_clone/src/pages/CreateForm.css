@@ -599,11 +599,6 @@
   border-bottom: 1px solid var(--color-gray-200);
 }
 
-.release-destination__recommendations small {
-  flex: 0 0 auto;
-  color: var(--color-gray-600);
-}
-
 .release-flow__choice-list {
   display: grid;
   gap: 12px;
