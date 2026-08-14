@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppState } from "../context/AppStateContext";
+import {
+  fetchMediaRecommendations,
+  type MediaRecommendation,
+} from "../lib/mediaRecommendations";
 import BlockGuard from "../components/onboarding/BlockGuard";
 import "./CreateForm.css";
 
@@ -20,17 +24,41 @@ export default function PressReleaseNew() {
   const [category, setCategory] = useState(categories[0]);
   const [subCategory, setSubCategory] = useState(categories[1]);
   const [scheduleType, setScheduleType] = useState<"now" | "reserve">("now");
+  const [recommendations, setRecommendations] = useState<MediaRecommendation[]>([]);
+  const [recommendationStatus, setRecommendationStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle"
+  );
+  const [recommendationError, setRecommendationError] = useState("");
   const [done, setDone] = useState(false);
   const navigate = useNavigate();
 
   const filteredMediaLists = mediaLists.filter((list) => list.name.toLowerCase().includes(search.toLowerCase()));
   const selectedLists = mediaLists.filter((list) => selectedListIds.includes(list.id));
   const destinationCount =
-    selectionMode === "auto" ? 42 : selectedLists.reduce((sum, list) => sum + Math.max(list.count, 0), 0);
-  const canGoNext = step !== 2 || selectionMode === "auto" || selectedListIds.length > 0;
+    selectionMode === "auto"
+      ? recommendations.length
+      : selectedLists.reduce((sum, list) => sum + Math.max(list.count, 0), 0);
+  const canGoNext =
+    step !== 2 ||
+    (selectionMode === "auto" ? recommendationStatus === "success" && recommendations.length > 0 : selectedListIds.length > 0);
 
   function toggleList(id: string) {
     setSelectedListIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  }
+
+  async function selectAuto() {
+    setSelectionMode("auto");
+    setRecommendationStatus("loading");
+    setRecommendationError("");
+    setRecommendations([]);
+    try {
+      const result = await fetchMediaRecommendations(title, body);
+      setRecommendations(result.recommendations);
+      setRecommendationStatus("success");
+    } catch (error) {
+      setRecommendationError(error instanceof Error ? error.message : "メディアの自動選択に失敗しました。");
+      setRecommendationStatus("error");
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -181,12 +209,12 @@ export default function PressReleaseNew() {
                   <input
                     checked={selectionMode === "auto"}
                     name="selectionMode"
-                    onChange={() => setSelectionMode("auto")}
+                    onChange={selectAuto}
                     type="radio"
                   />
                   <span>
                     <strong>自動選択</strong>
-                    <small>ビジネスカテゴリや所在地をもとにメディアを自動で選択します</small>
+                    <small>内容が近い過去のプレスリリースから掲載メディアを自動で選択します</small>
                   </span>
                 </label>
               </div>
@@ -276,8 +304,38 @@ export default function PressReleaseNew() {
                 </>
               ) : (
                 <div className="release-destination__auto-panel">
-                  <strong>カテゴリと企業情報から42媒体を候補にしています。</strong>
-                  <span>次の確認画面で配信予定数を確認できます。</span>
+                  {recommendationStatus === "loading" && (
+                    <>
+                      <strong>類似するプレスリリースを検索しています。</strong>
+                      <span>掲載実績のあるメディアを選定中です。</span>
+                    </>
+                  )}
+                  {recommendationStatus === "success" && (
+                    <>
+                      <strong>{recommendations.length}媒体を自動選択しました。</strong>
+                      <span>類似度が高い掲載実績を優先しています。</span>
+                      <ol className="release-destination__recommendations">
+                        {recommendations.map((item) => (
+                          <li key={item.mediaId ?? item.siteName}>
+                            <span>{item.siteName}</span>
+                            <small>類似度 {(item.score * 100).toFixed(1)}%</small>
+                          </li>
+                        ))}
+                      </ol>
+                    </>
+                  )}
+                  {recommendationStatus === "error" && (
+                    <>
+                      <strong>メディアを自動選択できませんでした。</strong>
+                      <span>{recommendationError}</span>
+                      <button className="btn btn-outline btn-sm" onClick={selectAuto} type="button">
+                        再試行
+                      </button>
+                    </>
+                  )}
+                  {recommendationStatus === "idle" && (
+                    <span>自動選択を選ぶと、類似するプレスリリースから掲載メディアを推薦します。</span>
+                  )}
                 </div>
               )}
             </section>

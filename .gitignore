@@ -5,3 +5,5 @@ __pycache__/
 guide_panel/__pycache__/
 node_modules
 *.db
+.logs/
+.run/
