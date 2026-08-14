@@ -1,4 +1,4 @@
-"""Generates the two rich menu PNG images used by setup_rich_menu.py.
+"""Generates the rich menu PNG images used by setup_rich_menu.py.
 
 Run once (or whenever the layout/labels change):
     ../.webapppr/bin/python generate_richmenu_images.py
@@ -38,47 +38,67 @@ def draw_centered_text(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]
 def build_menu1() -> None:
     img = Image.new("RGB", (WIDTH, HEIGHT), "white")
     draw = ImageDraw.Draw(img)
-    font_label = ImageFont.truetype(FONT_PATH_BOLD, 72)
-    font_footer = ImageFont.truetype(FONT_PATH_BOLD, 80)
+    font_label = ImageFont.truetype(FONT_PATH_BOLD, 84)
 
     cell_w = WIDTH // 3
-    cell_h = HEIGHT // 3
+    cell_h = HEIGHT // 2
     for index, category in enumerate(CATEGORIES):
         row, col = divmod(index, 3)
         x0, y0 = col * cell_w, row * cell_h
         x1 = x0 + cell_w if col < 2 else WIDTH
-        y1 = y0 + cell_h
-        color = ROW_COLORS[row % len(ROW_COLORS)]
+        y1 = y0 + cell_h if row < 1 else HEIGHT
+        color = ROW_COLORS[index % len(ROW_COLORS)]
         draw.rectangle([x0, y0, x1, y1], fill=color, outline="white", width=6)
         draw_centered_text(draw, (x0, y0, x1, y1), category["label"], font_label)
-
-    footer_y0 = 2 * cell_h
-    draw.rectangle([0, footer_y0, WIDTH, HEIGHT], fill=SWITCH_COLOR, outline="white", width=6)
-    draw_centered_text(draw, (0, footer_y0, WIDTH, HEIGHT), "閲覧数を見る ▶", font_footer)
 
     img.save(OUT_DIR / "menu1_category.png")
 
 
-def build_menu2() -> None:
+def build_menu3() -> None:
     img = Image.new("RGB", (WIDTH, HEIGHT), "white")
     draw = ImageDraw.Draw(img)
-    font_label = ImageFont.truetype(FONT_PATH_BOLD, 88)
-    font_footer = ImageFont.truetype(FONT_PATH_BOLD, 80)
+    font_label = ImageFont.truetype(FONT_PATH_BOLD, 76)
+    font_footer = ImageFont.truetype(FONT_PATH_BOLD, 72)
 
+    half = WIDTH // 2
     top_h = int(HEIGHT * 2 / 3)
-    draw.rectangle([0, 0, WIDTH // 2, top_h], fill="#2E7D6B", outline="white", width=6)
-    draw_centered_text(draw, (0, 0, WIDTH // 2, top_h), "今週の閲覧数", font_label)
 
-    draw.rectangle([WIDTH // 2, 0, WIDTH, top_h], fill="#2E6B7D", outline="white", width=6)
-    draw_centered_text(draw, (WIDTH // 2, 0, WIDTH, top_h), "今月の閲覧数", font_label)
+    draw.rectangle([0, 0, half, top_h], fill="#2E7D6B", outline="white", width=6)
+    draw_centered_text(draw, (0, 0, half, top_h), "類似事例を\n見る", font_label)
+
+    draw.rectangle([half, 0, WIDTH, top_h], fill="#2E6B7D", outline="white", width=6)
+    draw_centered_text(draw, (half, 0, WIDTH, top_h), "プレスリリース\n管理", font_label)
 
     draw.rectangle([0, top_h, WIDTH, HEIGHT], fill=SWITCH_COLOR, outline="white", width=6)
-    draw_centered_text(draw, (0, top_h, WIDTH, HEIGHT), "◀ 類似記事に戻る", font_footer)
+    draw_centered_text(draw, (0, top_h, WIDTH, HEIGHT), "アカウント連携", font_footer)
 
-    img.save(OUT_DIR / "menu2_views.png")
+    img.save(OUT_DIR / "menu3_corporate.png")
+
+
+def build_menu4() -> None:
+    img = Image.new("RGB", (WIDTH, HEIGHT), "white")
+    draw = ImageDraw.Draw(img)
+    font_label = ImageFont.truetype(FONT_PATH_BOLD, 64)
+    font_footer = ImageFont.truetype(FONT_PATH_BOLD, 72)
+
+    col_w = WIDTH // 3
+    top_h = int(HEIGHT * 2 / 3)
+    labels = ["閲覧数確認", "プレスリリース\n詳細", "進捗管理"]
+    for index, label in enumerate(labels):
+        x0 = index * col_w
+        x1 = x0 + col_w if index < 2 else WIDTH
+        color = ROW_COLORS[index % len(ROW_COLORS)]
+        draw.rectangle([x0, 0, x1, top_h], fill=color, outline="white", width=6)
+        draw_centered_text(draw, (x0, 0, x1, top_h), label, font_label)
+
+    draw.rectangle([0, top_h, WIDTH, HEIGHT], fill=SWITCH_COLOR, outline="white", width=6)
+    draw_centered_text(draw, (0, top_h, WIDTH, HEIGHT), "◀ メインメニューに戻る", font_footer)
+
+    img.save(OUT_DIR / "menu4_press_release.png")
 
 
 if __name__ == "__main__":
     build_menu1()
-    build_menu2()
+    build_menu3()
+    build_menu4()
     print(f"saved to {OUT_DIR}")
