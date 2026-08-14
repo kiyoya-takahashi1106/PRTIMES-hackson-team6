@@ -72,7 +72,9 @@
 }
 
 .create-form__success {
+  width: min(100%, 640px);
   max-width: 640px;
+  margin: clamp(32px, 10vh, 96px) auto 0;
   text-align: center;
   background: var(--color-gray-50);
   border-radius: 16px;
