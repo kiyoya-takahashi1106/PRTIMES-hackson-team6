@@ -4,6 +4,7 @@ import { useAppState } from "../context/AppStateContext";
 import BlockGuard from "../components/onboarding/BlockGuard";
 import TitleHintPopover from "../components/onboarding/TitleHintPopover";
 import "./CreateForm.css";
+import "./DraftSuccess.css";
 
 export default function StoryNew() {
   const { addStory, setGuidancePaused } = useAppState();

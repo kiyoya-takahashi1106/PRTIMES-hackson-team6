@@ -7,6 +7,7 @@ import {
 } from "../lib/mediaRecommendations";
 import BlockGuard from "../components/onboarding/BlockGuard";
 import "./CreateForm.css";
+import "./DraftSuccess.css";
 
 const flowSteps = ["リリース本文", "追加情報設定", "配信先を選択", "配信詳細設定", "最終確認"];
 const purposes = ["CM放映", "新商品", "イベント", "キャンペーン", "業績発表"];
