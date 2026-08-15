@@ -1,28 +1,33 @@
 # line_bot 開発フロー
 
-本番サーバへは直接デプロイせず、次の3ステップで進める。
+LINE Messaging API を使った Bot です。
+本番サーバへは直接デプロイせず、ローカル確認後に GitHub 経由で反映します。
 
-## 1. ローカルの変更を LINE で確認する
+## ローカル確認
 
-1. `.env` に `LINE_CHANNEL_SECRET` / `LINE_CHANNEL_ACCESS_TOKEN` を設定する（本番と別チャネルを使う場合はそちらの値に差し替える）
-2. ターミナルA: `./line_bot/run.sh` でローカルサーバを起動 (port 8001)
-3. ターミナルB: `./line_bot/dev_tunnel.sh` で cloudflared トンネルを起動し、表示された `https://xxxx.trycloudflare.com/webhook` を控える
-4. [LINE Developers コンソール](https://developers.line.biz/console/) の対象チャネル → Messaging API → Webhook URL に上記URLを設定し「検証」→ 実際にLINEアプリから話しかけて確認する
-5. 確認が終わったらトンネルを閉じ（Ctrl+C）、Webhook URL を本番のものに戻す
+1. リポジトリ直下の `.env` に `LINE_CHANNEL_SECRET` / `LINE_CHANNEL_ACCESS_TOKEN` を設定する
+2. `./line_bot/run.sh` でローカルサーバを起動する
+3. 別ターミナルで `./line_bot/dev_tunnel.sh` を起動する
+4. 表示された `https://xxxx.trycloudflare.com/webhook` を LINE Developers の Webhook URL に設定する
+5. LINE アプリから話しかけて動作確認する
 
-## 2. ファイルに変更を加える
+確認後はトンネルを止め、Webhook URL を本番のものに戻してください。
 
-`line_bot/` 配下を編集し、1に戻って動作確認する。
+## 主要ファイル
 
-## 3. 変更を反映する
+- `line_bot/main.py`: FastAPI アプリと Webhook
+- `line_bot/db.py`: DB 接続
+- `line_bot/models.py`: データモデル
+- `line_bot/seed.py`: 初期データ
+- `line_bot/setup_rich_menu.py`: リッチメニュー設定
 
-本番サーバの更新は手動（サーバ上で `git pull`）で行うため、ここでの作業は GitHub 側の更新のみ。
+## 反映手順
 
-```
+```bash
 git checkout -b feature/xxx
 git add line_bot/...
 git commit -m "..."
 git push -u origin feature/xxx
 ```
 
-その後 GitHub 上で Pull Request を作成する。マージ後、サーバ管理者が本番サーバ上で `git pull` して反映する。
+Pull Request を作成し、マージ後にサーバ側で `git pull` して反映します。
