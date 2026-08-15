@@ -8,8 +8,9 @@ VENV_DIR="$PROJECT_DIR/.webapppr"
 
 if [[ ! -x "$VENV_DIR/bin/python" ]]; then
 	python3 -m venv "$VENV_DIR"
-	"$VENV_DIR/bin/pip" install -r "$PROJECT_DIR/requirements.txt"
 fi
 
+"$VENV_DIR/bin/pip" install -r "$PROJECT_DIR/requirements.txt"
+
 cd "$SCRIPT_DIR"
-exec "$VENV_DIR/bin/python" -m uvicorn main:app --reload
+exec "$VENV_DIR/bin/python" -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload

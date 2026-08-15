@@ -4,7 +4,14 @@ from fastapi import APIRouter, HTTPException
 
 from db import get_session
 from models import Company, MediaList, PressRelease, Story, empty_breakdown
-from schemas import CompanyUpdate, MediaListCreate, PressReleaseCreate, StoryCreate
+from recommendation import RecommendationDataError, recommend_media
+from schemas import (
+    CompanyUpdate,
+    MediaListCreate,
+    MediaRecommendationRequest,
+    PressReleaseCreate,
+    StoryCreate,
+)
 
 router = APIRouter(prefix="/api/v1")
 
@@ -134,6 +141,23 @@ async def get_media_list(list_id: str) -> dict[str, Any]:
         if media_list is None:
             raise HTTPException(status_code=404, detail="Media list not found.")
         return media_list_out(media_list)
+
+
+@router.post("/media-recommendations")
+def create_media_recommendations(request: MediaRecommendationRequest) -> dict[str, Any]:
+    try:
+        return recommend_media(
+            title=request.title,
+            lead_paragraph=request.lead_paragraph,
+            body=request.body,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    except RecommendationDataError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+    except Exception as error:
+        # OpenAI and database failures are unavailable dependencies, not invalid user input.
+        raise HTTPException(status_code=502, detail="Media recommendation failed.") from error
 
 
 @router.get("/stories")

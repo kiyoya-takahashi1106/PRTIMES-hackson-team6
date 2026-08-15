@@ -1,0 +1,6 @@
+.create-form__success {
+  width: min(100%, 640px);
+  margin-top: clamp(32px, 10vh, 96px);
+  margin-right: auto;
+  margin-left: auto;
+}

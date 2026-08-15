@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 from typing import Any, TypedDict
@@ -9,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from api import router as api_router
-from db import init_db
+from db import engine, init_db
 from seed import seed_if_empty
 
 BASE_DIR = Path(__file__).parent
@@ -40,8 +42,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-init_db()
-seed_if_empty()
+# The local demo owns its SQLite schema. PostgreSQL is an existing shared database
+# and must not receive demo tables as a side effect of starting this API.
+if engine.dialect.name == "sqlite":
+    init_db()
+    seed_if_empty()
 app.include_router(api_router)
 
 class NextStepRequest(BaseModel):
@@ -180,5 +185,3 @@ async def campaign_goto(request: NextStepRequest) -> JSONResponse:
 
     campaign_state["step_index"] = target_index
     return JSONResponse(step_response(target_index, campaign_state["answers"]))
-
-
